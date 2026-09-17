@@ -1,0 +1,7 @@
+# zizmor configuration.
+#
+# Every third-party action in this repo is pinned to a full commit SHA, so the
+# unpinned-uses audit needs no namespace allowlist (unlike stripe-python, which
+# exempts its own `stripe/openapi/*` actions). This file exists as the
+# documented home for any future finding suppression; keep it minimal.
+rules: {}

@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.cache
+.hypothesis/
+.pytest_cache/
+
+# Linters / type checkers
+.ruff_cache/
+.mypy_cache/
+
+# pyenv / uv — .python-version IS committed here (see the negation below) so that
+# every checkout and CI run develops on the same interpreter.
+.python-version
+!/.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Visual Studio Code — settings and extension recommendations are checked in
+# so every contributor and CI see the same diagnostics; everything else is local.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# Git
+*.orig
+
+# Internal planning notes. The full v0.1 plan names private sibling projects and
+# internal infrastructure; it lives outside this repository. Ignored here so a
+# stray copy can never be committed, or swept into an sdist by a build.
+/high-level-overview-plan.md
+/*-plan.md

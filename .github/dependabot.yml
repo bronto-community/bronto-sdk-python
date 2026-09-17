@@ -1,0 +1,46 @@
+# Dependabot maintains the two things this repository pins by hand and would
+# otherwise never revisit: third-party action SHAs and uv.lock.
+version: 2
+updates:
+  # Every action is pinned to a commit SHA, which is correct and unmaintainable
+  # by hand — a pinned SHA never receives a security fix unless something bumps
+  # it. Dependabot rewrites both the SHA and its trailing `# vX.Y.Z` comment.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    groups:
+      # One pull request a week rather than five. If the batch goes red, the
+      # checks name which action did it.
+      actions:
+        patterns: ["*"]
+
+  # `uv`, not `pip`: a pip-ecosystem update would edit pyproject.toml and leave
+  # uv.lock untouched, and every job runs `uv sync --locked`, so the pull
+  # request would fail on arrival.
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    # Update uv.lock only; never rewrite the ranges in pyproject.toml. Those
+    # ranges are the compatibility contract this library offers its consumers,
+    # and widening one is a deliberate decision with a changelog entry behind
+    # it. Left to its own devices Dependabot proposed relaxing the `mcp<2` cap
+    # to `<3` — crossing a major version the cap exists to exclude. The lock is
+    # ours to keep fresh; the ranges are not Dependabot's to choose.
+    versioning-strategy: lockfile-only
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Grouped by name, not by `dependency-type: development`: Dependabot's uv
+      # support reports everything as a production dependency, including PEP 735
+      # [dependency-groups], so a dependency-type filter would match nothing.
+      dev-tooling:
+        patterns: ["ruff", "pyright", "pytest*", "build", "twine"]
+      runtime:
+        patterns: ["httpx", "pydantic", "typing_extensions"]
