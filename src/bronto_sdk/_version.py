@@ -5,4 +5,4 @@ pydantic. `just update-version` rewrites this file, `VERSION`, and the
 `version` field in `pyproject.toml` together.
 """
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"

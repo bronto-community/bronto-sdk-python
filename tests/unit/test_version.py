@@ -1,5 +1,6 @@
 """Smoke tests proving the harness and the version wiring work end to end."""
 
+import re
 import subprocess
 import sys
 from importlib.metadata import version
@@ -19,8 +20,16 @@ requires_posix_shell = pytest.mark.skipif(
 
 
 def test_version_is_importable():
-    """The package re-exports VERSION with no side effects on import."""
-    assert bronto_sdk.VERSION == "0.1.0"
+    """The package re-exports a PEP 440 version with no side effects on import.
+
+    Deliberately shape-checked rather than pinned to a literal. The two tests
+    below already hold VERSION against the VERSION file and the installed
+    metadata, which is the invariant that matters; a third copy of the number
+    here only meant every release had to edit its own test suite.
+    """
+    assert re.fullmatch(r"\d+\.\d+\.\d+[0-9a-z.]*", bronto_sdk.VERSION), (
+        bronto_sdk.VERSION
+    )
     assert "VERSION" in bronto_sdk.__all__
     assert all(hasattr(bronto_sdk, name) for name in bronto_sdk.__all__)
 
@@ -54,7 +63,8 @@ def _run_version_check(repo_root: Path, *args: str) -> subprocess.CompletedProce
 @requires_posix_shell
 def test_version_check_accepts_the_matching_tag(repo_root: Path):
     """The release gate passes when the tag names the recorded version."""
-    result = _run_version_check(repo_root, "--self-test", "v0.1.0")
+    recorded = (repo_root / "VERSION").read_text(encoding="utf-8").strip()
+    result = _run_version_check(repo_root, "--self-test", f"v{recorded}")
     assert result.returncode == 0, result.stderr
 
 

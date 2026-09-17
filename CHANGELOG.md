@@ -8,6 +8,23 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-17
+
+### Added
+
+- **Signed release artifacts.** The wheel and sdist are now signed with
+  [Sigstore](https://www.sigstore.dev/) during the release workflow, and a
+  `.sigstore.json` bundle is attached to the release beside each one. Signing is
+  keyless: the signature is made with a short-lived identity minted for that one
+  workflow run, so there is no signing key to hold and the repository still
+  stores no secrets. The signature attests that an artifact came from this
+  repository's release workflow running on the tag it claims.
+
+  Verifying needs only pip — `pip install sigstore`, then
+  `python -m sigstore verify identity`. [SECURITY.md](SECURITY.md) has the full
+  command. The release workflow verifies its own signatures before publishing,
+  so an artifact whose signature does not check never reaches a release.
+
 ## [0.1.0] - 2026-09-17
 
 First release. Everything below is new.
@@ -70,5 +87,6 @@ Automatic retries and backoff, pagination iterators, an MCP session opener,
 LangChain tool decorators, OpenTelemetry hooks, an ingestion client (URL helper
 only), and REST coverage beyond the five operations above.
 
-[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bronto-community/bronto-sdk-python/releases/tag/v0.1.0
