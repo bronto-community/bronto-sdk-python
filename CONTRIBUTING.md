@@ -89,17 +89,42 @@ To cut a release:
    write to all three files is now an error rather than a silent no-op.
 3. `just prepare`, then commit.
 4. Tag `vX.Y.Z` and push the tag.
+5. **Approve the deployment.** The `release` job waits on the protected
+   `release` environment; approve it from the run's page in the Actions tab.
+   Either maintainer on the reviewer list can approve, including the person who
+   pushed the tag — the gate is there to make a release a deliberate, recorded
+   act, not to force a second pair of hands.
 
 The workflow gates the release on the tag matching the version files, then on
 the same lint/test/build checks a pull request runs — literally the same file,
 `.github/workflows/_checks.yml`, so a release cannot be verified on less than a
 pull request is.
 
-**Rehearse before the real tag.** Run `release.yml` from `main` via
-`workflow_dispatch` to exercise everything except release creation, and push a
-pre-release tag (`v0.1.0rc1`) to exercise release creation itself — a tag whose
-version has a letter in it is published as a GitHub pre-release. Delete the
-rehearsal release and tag afterwards.
+**Rehearse with `workflow_dispatch`, not with a tag.** Running `release.yml`
+from `main` exercises the version gate, the full test matrix and the build; the
+release job is skipped because there is no tag.
+
+Do not push a throwaway `vX.Y.Zrc1` tag to rehearse. A repository ruleset makes
+every `v*` tag immutable — it cannot be moved or deleted once pushed, by anyone,
+including admins. That is deliberate: a tag a consumer has pinned must never
+change underneath them. The practical consequence is that any `v*` tag you push
+is permanent, so push one only when you mean it. A genuine pre-release is fine
+(a version with a letter in it, like `v1.2.0rc1`, is published as a GitHub
+pre-release and stays out of "latest"); a disposable one is not, because it
+cannot be disposed of.
+
+## What the repository enforces
+
+Settings are kept in step with the `bronto-cli` sibling so that the two repos
+are governed alike:
+
+- `main` takes changes only through a pull request, with linear history, all
+  review threads resolved, and the eight `Checks / …` jobs green. Force-pushes
+  and deletion are blocked, with no bypass for anyone.
+- `v*` tags cannot be moved or deleted (above).
+- Actions must be pinned to a commit SHA — GitHub rejects a tag reference
+  outright, which is the same rule `zizmor` enforces in CI.
+- Security vulnerabilities are reported privately; see [SECURITY.md](SECURITY.md).
 
 ## Code of Conduct
 
