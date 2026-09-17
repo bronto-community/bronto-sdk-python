@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      # Version tags only, e.g. v0.1.0 / v0.1.0a1 / v1.2.3rc1.
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  # Lets a maintainer rehearse the whole path — version gate, full matrix,
+  # build, artifact gate — from a branch without burning a version number. The
+  # release job is tag-gated below, so a dispatched run produces nothing.
+  workflow_dispatch: {}
+
+# No token by default; each job re-grants exactly the scope it needs.
+permissions: {}
+
+jobs:
+  # Runs before any toolchain is installed: if the tag and the three version
+  # files disagree, everything downstream is wasted work. Costs ~5 seconds.
+  version:
+    name: Tag matches the version files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Tag matches VERSION, _version.py and pyproject.toml
+        env:
+          # Passed via env rather than inlined into the script: a `${{ }}`
+          # expansion inside `run:` is substituted before bash sees it, which
+          # is what zizmor's template-injection audit flags.
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        # An empty TAG (a workflow_dispatch rehearsal) checks only that the
+        # three files agree, which is the useful half of the gate off a tag.
+        run: scripts/version-check.sh --self-test "$TAG"
+
+  checks:
+    name: Checks
+    needs: [version]
+    uses: ./.github/workflows/_checks.yml
+    permissions:
+      # Required: `permissions: {}` above is a ceiling on the called jobs.
+      contents: read
+
+  release:
+    name: GitHub Release
+    needs: [version, checks]
+    # A workflow_dispatch rehearsal stops here; only a tag publishes.
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    # Gate the only job in this repository that holds a write token behind a
+    # protected environment: add required reviewers in Settings → Environments.
+    # Until then GitHub auto-creates an open environment and this is a no-op.
+    environment: release
+    permissions:
+      # Creating a release and attaching assets is a contents write, and that
+      # is the only scope needed. (Re-enabling PyPI adds `id-token: write` to a
+      # separate job — see the note at the end of this file — never to this one.)
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # gh authenticates from GH_TOKEN below; no git credential needs to be
+          # persisted on disk (zizmor's artipacked audit).
+          persist-credentials: false
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+        with:
+          # Pin the TOOL, not just the action that installs it: without
+          # this, every run fetches whatever `just` was released last.
+          just-version: "1.58.0"
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          python-version: "3.13"
+      - name: Sync dev dependencies
+        run: uv sync --locked
+      # Rebuilt here rather than downloaded from `checks`: an artifact round
+      # trip is one more place for the wrong bytes to arrive, and the build
+      # takes about twenty seconds. `just build` ends in the artifact gate.
+      - name: Build sdist + wheel (twine check and the artifact gate included)
+        run: just build
+      - name: Extract this version's changelog section for the release body
+        env:
+          TAG: ${{ github.ref_name }}
+        # Fails when the section is missing or empty, so a tag cannot publish
+        # a release page with nothing on it.
+        run: just release-notes "${TAG#v}" > "$RUNNER_TEMP/notes.md"
+      - name: Create the release with both artifacts attached
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # --verify-tag refuses to invent a tag that was never pushed.
+          # A tag with a letter after the patch number (v0.1.0rc1, v0.1.0a1) is
+          # a pre-release: it stays out of "latest" and out of the README's
+          # install snippet.
+          prerelease=""
+          case "${TAG#v}" in *[a-z]*) prerelease="--prerelease" ;; esac
+          gh release create "$TAG" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --verify-tag \
+            $prerelease
+
+# Publishing to PyPI is deliberately off: consumers install the wheel from the
+# GitHub Release above. To re-enable it, add a `publish` job here with
+# `needs: [release]`, `environment: pypi`, `permissions: { id-token: write }`,
+# and `pypa/gh-action-pypi-publish` — nothing above this line changes. It
+# requires a one-time PyPI trusted-publisher pointing at this workflow and that
+# environment; publishing fails until that exists.

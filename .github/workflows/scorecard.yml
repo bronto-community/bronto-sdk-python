@@ -1,0 +1,54 @@
+name: Scorecard
+
+on:
+  push:
+    branches:
+      # Scorecard only analyses the default branch.
+      - main
+  schedule:
+    # Weekly. Several checks are time-windowed (Maintained, Code-Review), so a
+    # score that is never refreshed decays on its own.
+    - cron: "30 1 * * 6"
+
+# Upstream's example uses `read-all`; `{}` is strictly stricter, satisfies
+# Scorecard's own Token-Permissions check just as well, and keeps this file
+# consistent with ci.yml and release.yml.
+permissions: {}
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Upload the SARIF to the Code scanning dashboard. Free on public repos;
+      # this is not GitHub Advanced Security.
+      security-events: write
+      # Mint the OIDC token publish_results uses to attest the result to the
+      # public OpenSSF API — this is what makes the README badge resolve.
+      id-token: write
+      contents: read
+      # Read scopes the individual checks need: Maintained and CI-Tests
+      # enumerate workflow runs, Code-Review reads pull requests, and the SAST
+      # check looks for other analysis tools' check runs.
+      actions: read
+      issues: read
+      pull-requests: read
+      checks: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Requires a public repository; it is forced off on a private one.
+          publish_results: true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+      - uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          sarif_file: results.sarif

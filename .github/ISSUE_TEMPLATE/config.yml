@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bronto platform support
+    url: https://bronto.io
+    about: |
+      Please only file issues here for bugs or feature requests in the
+      bronto-sdk Python library itself.
+
+      For help with the Bronto platform or your account, please use Bronto
+      support rather than this repository.

@@ -1,0 +1,26 @@
+{
+  "window.title": "${rootName}${separator}${activeEditorMedium}",
+  "editor.renderWhitespace": "all",
+  "files.exclude": {
+    "**/*.pyc": true,
+    "**/__pycache__": true,
+    ".pytest_cache": true,
+    ".ruff_cache": true,
+    "*.egg-info": true,
+    ".venv": true
+  },
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "editor.formatOnSave": true,
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  // Tests
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.diagnosticMode": "workspace"
+}

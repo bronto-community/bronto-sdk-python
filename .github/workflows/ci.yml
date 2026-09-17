@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# No token by default; the called workflow's jobs re-grant the read scope they
+# need, and this is the ceiling they cannot exceed.
+permissions: {}
+
+jobs:
+  checks:
+    name: Checks
+    # The same file release.yml calls, so a tag push cannot be verified on less
+    # than a pull request is. See .github/workflows/_checks.yml for why.
+    uses: ./.github/workflows/_checks.yml
+    permissions:
+      # Required: `permissions: {}` above is a ceiling on the called workflow's
+      # jobs, and every one of them needs to check out the repository.
+      contents: read
