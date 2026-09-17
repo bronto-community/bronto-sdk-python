@@ -71,7 +71,10 @@ if [ "${1:-}" = "--self-test" ]; then
     exit 1
   fi
   echo "version-check: self-test ok (a mismatching version is rejected)"
-  set --
+  # `shift`, not `set --`: the latter clears EVERY positional argument, which
+  # silently discarded the tag that follows --self-test and made the tag
+  # comparison below a no-op. CI passed a mismatching tag because of it.
+  shift
 fi
 
 tag="${1:-}"
