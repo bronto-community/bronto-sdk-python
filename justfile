@@ -55,6 +55,10 @@ check-version tag="":
 check-dist:
     scripts/dist-check.sh
 
+# verify the live ruleset still requires exactly the recorded checks — needs network
+check-ruleset:
+    scripts/ruleset-drift.sh
+
 # print the CHANGELOG section a release would publish — preview before tagging
 release-notes version:
     scripts/release-notes.sh {{ version }}

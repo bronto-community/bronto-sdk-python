@@ -39,6 +39,7 @@ mocked with `httpx.MockTransport`, so the fast suite never touches the network.
 | Verify the vendored spec digest | `just check-spec` |
 | Verify the three version files agree | `just check-version` |
 | Verify the built artifacts | `just check-dist` |
+| Verify the live ruleset matches the recorded checks | `just check-ruleset` |
 | Preview a release body | `just release-notes X.Y.Z` |
 
 ## Tests
@@ -125,6 +126,35 @@ are governed alike:
 - Actions must be pinned to a commit SHA — GitHub rejects a tag reference
   outright, which is the same rule `zizmor` enforces in CI.
 - Security vulnerabilities are reported privately; see [SECURITY.md](SECURITY.md).
+
+The names of those eight required checks are mirrored in
+`.github/required-status-checks.txt`. Two gates keep the mirror honest:
+`tests/unit/test_required_checks.py` fails when the list stops matching the
+names `ci.yml` and `_checks.yml` generate, and `just check-ruleset` (run weekly
+by `ruleset-drift.yml`) fails when it stops matching the live ruleset.
+
+### Renaming a required check
+
+Read this before touching a job name or the test matrix. **A pull request that
+renames or removes a required check wedges itself.** The old context stops
+reporting on that very pull request, GitHub shows it as pending rather than
+failed — a check that never reports is never late — and with no bypass actors
+nobody can merge it, including admins.
+
+Adding the new name to the ruleset first does not help: a required context that
+no job has produced yet blocks every open pull request immediately. The only
+order that never wedges anything is to **contract first**:
+
+1. Remove the outgoing context from the `protect-main` ruleset
+   (Settings → Rules, or `gh api`).
+2. Merge the pull request that renames the job or changes the matrix. It carries
+   the updated `.github/required-status-checks.txt`, which is what the offline
+   gate checks.
+3. Add the new context to the ruleset.
+
+Between steps 1 and 3 that one check is not enforced, which is the cost of never
+being locked out. Dropping a Python version renames six contexts at once, so
+expect to repeat step 1 for each.
 
 ## Code of Conduct
 
