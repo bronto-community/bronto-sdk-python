@@ -1,6 +1,7 @@
 # bronto-sdk
 
 [![CI](https://github.com/bronto-community/bronto-sdk-python/actions/workflows/ci.yml/badge.svg)](https://github.com/bronto-community/bronto-sdk-python/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/bronto-community/bronto-sdk-python)](https://github.com/bronto-community/bronto-sdk-python/releases)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/bronto-community/bronto-sdk-python/badge)](https://scorecard.dev/viewer/?uri=github.com/bronto-community/bronto-sdk-python)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://github.com/bronto-community/bronto-sdk-python)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)

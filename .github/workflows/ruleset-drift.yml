@@ -1,0 +1,49 @@
+name: Ruleset drift
+
+# Fails when the live branch ruleset stops requiring exactly the checks recorded
+# in .github/required-status-checks.txt.
+#
+# The recorded list is checked against the workflows offline, on every pull
+# request, by tests/unit/test_required_checks.py. Only this workflow can check
+# it against the ruleset itself, which is edited on GitHub rather than in the
+# repository — and that is the edit that wedges everything, because GitHub
+# reports a required check no job produces as permanently pending rather than
+# failed, and protect-main has no bypass actors to merge past it.
+on:
+  schedule:
+    # Weekly safety net for a ruleset edited directly in the web UI, which
+    # leaves no trace in the repository for the push trigger below to catch.
+    - cron: "45 1 * * 6"
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    # Surface drift on the change that causes it, rather than up to a week
+    # later. Deliberately not `pull_request`: a pull request that legitimately
+    # changes the matrix must disagree with the live ruleset until the ruleset
+    # is updated after merge, so gating pull requests here would fail exactly
+    # the ones doing the right thing.
+    paths:
+      - .github/workflows/**
+      - .github/required-status-checks.txt
+
+permissions: {}
+
+jobs:
+  drift:
+    name: Ruleset matches the recorded checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Compare the live ruleset with the recorded checks
+        env:
+          # Reading rulesets on a public repository needs no authentication;
+          # the token only buys the authenticated rate limit. Passed through
+          # env rather than inlined into the script, which is what zizmor's
+          # template-injection audit asks for.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: scripts/ruleset-drift.sh

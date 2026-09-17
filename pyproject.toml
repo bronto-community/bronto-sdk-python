@@ -51,6 +51,10 @@ dev = [
   "pytest-cov>=7",
   "build>=1.6",
   "twine>=7",
+  # Parses the workflow files in tests/unit/test_required_checks.py. Dev-only
+  # on purpose: nothing the SDK ships reads YAML, and PyYAML has no py.typed,
+  # so an import outside tests/ would fail pyright's strict mode.
+  "pyyaml>=6",
 ]
 
 [build-system]

@@ -1,0 +1,20 @@
+# Mirror of the protect-main ruleset's REQUIRED status checks for main.
+#
+# GitHub treats a required status check that never reports as permanently
+# PENDING, not failed. A required context that no job produces therefore blocks
+# every pull request forever, and protect-main has no bypass actors, so not even
+# an admin can merge past it — the only recovery is editing the ruleset.
+#
+# tests/unit/test_required_checks.py fails when this list stops matching the
+# names ci.yml and _checks.yml generate; scripts/ruleset-drift.sh fails when it
+# stops matching the live ruleset. Keep all three in step, and see CONTRIBUTING
+# for the order to change them in: renaming a required check wedges the very
+# pull request that renames it unless the ruleset is contracted first.
+Checks / Build & check package
+Checks / Lint, typecheck & spec gate
+Checks / Test (3.11, ubuntu-latest)
+Checks / Test (3.12, ubuntu-latest)
+Checks / Test (3.13, ubuntu-latest)
+Checks / Test (3.14, macos-latest)
+Checks / Test (3.14, ubuntu-latest)
+Checks / Test (3.14, windows-latest)
