@@ -1,0 +1,8 @@
+# Default owner for everything in the repo.
+* @ngladychev
+
+# Workflow, packaging and release changes are security-sensitive (they touch
+# secrets, runners, and the PyPI trusted-publishing pipeline), so they are
+# owned explicitly even when a broader rule would otherwise apply.
+/.github/workflows/ @ngladychev
+/pyproject.toml @ngladychev

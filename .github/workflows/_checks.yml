@@ -1,0 +1,128 @@
+name: Checks
+
+# Called by ci.yml (pull requests and pushes to main) and by release.yml (tag
+# pushes), so the artifact that ships is tested on exactly what a pull request
+# is tested on.
+#
+# These three jobs previously existed twice, copied into publish.yml, and the
+# copies had already drifted: the release copy ran ubuntu only — no macOS, no
+# Windows, and no interpreter assertion — so a tagged release was verified on
+# strictly less than any pull request. `workflow_call` is the mechanism the
+# earlier comment about cross-workflow `needs` and `workflow_run` was missing.
+on:
+  workflow_call: {}
+
+# No token by default; every job re-grants exactly the read scope it needs.
+# NOTE: the CALLER's top-level permissions are a ceiling on these jobs, so a
+# caller with `permissions: {}` must grant `contents: read` on its `uses:` job.
+permissions: {}
+
+jobs:
+  lint:
+    name: Lint, typecheck & spec gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+        with:
+          # Pin the TOOL, not just the action that installs it: without
+          # this, every run fetches whatever `just` was released last.
+          just-version: "1.58.0"
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          # Static checks only need a single modern interpreter; the test
+          # matrix is what proves the >=3.11 floor. pythonVersion in pyright
+          # config is pinned to 3.11 regardless of the runtime here.
+          python-version: "3.13"
+      - name: Sync dev dependencies
+        run: uv sync --locked
+      - name: uv.lock is in sync with pyproject.toml
+        # Redundant with `uv sync --locked` above, which already fails on a
+        # stale lock. Kept as its own step purely so the failure names the
+        # cause instead of surfacing as "Sync dev dependencies" going red.
+        run: uv lock --check
+      - name: Lint
+        run: just lint
+      - name: Format check
+        run: just format-check
+      - name: Typecheck
+        run: just typecheck
+      - name: Vendored spec digest gate
+        run: just check-spec
+      - name: Version consistency gate
+        # No tag argument here: on a pull request there is nothing to compare a
+        # tag against. release.yml passes the tag.
+        run: just check-version
+
+  test:
+    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        include:
+          # One run each on the other two platforms, on the newest interpreter.
+          - os: macos-latest
+            python-version: "3.14"
+          - os: windows-latest
+            python-version: "3.14"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+        with:
+          # Pin the TOOL, not just the action that installs it: without
+          # this, every run fetches whatever `just` was released last.
+          just-version: "1.58.0"
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          # Selects the interpreter for this matrix leg via UV_PYTHON. This
+          # overrides the 3.14 pin in .python-version, which is only the local
+          # development default.
+          python-version: ${{ matrix.python-version }}
+      - name: Sync dev dependencies
+        run: uv sync --locked
+      - name: Assert the interpreter matches the matrix leg
+        # A mis-selected interpreter would silently test the same version
+        # several times over. Fail loudly instead.
+        run: uv run python -c "import sys; v='${{ matrix.python-version }}'; assert sys.version.startswith(v), f'expected {v}, got {sys.version}'; print(sys.version)"
+      - name: Run tests
+        run: just test
+
+  build:
+    name: Build & check package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+        with:
+          # Pin the TOOL, not just the action that installs it: without
+          # this, every run fetches whatever `just` was released last.
+          just-version: "1.58.0"
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          python-version: "3.13"
+      - name: Sync dev dependencies
+        run: uv sync --locked
+      - name: Build sdist + wheel, run twine check and the artifact gate
+        # `just build` ends in scripts/dist-check.sh, which is what actually
+        # proves the wheel ships py.typed and the sdist ships nothing internal.
+        run: just build
+      - name: Upload distribution artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: dist/
