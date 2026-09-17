@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.24,<2", "langchain-mcp-adapters>=0.3.1"]
+mcp = ["mcp>=1.24,<3", "langchain-mcp-adapters>=0.3.1"]
 langchain = ["langchain-core>=0.3"]
 
 [project.urls]
