@@ -162,6 +162,13 @@ branch = true
 
 [tool.coverage.report]
 exclude_also = ["if TYPE_CHECKING:", "@overload", "raise NotImplementedError"]
-# No `fail_under` yet, deliberately. The 90% target is for the finished SDK; a
-# threshold over a near-empty package is either trivially met or blocks work.
-# CI adds `fail_under = 90` once the client and resource layers exist.
+# A floor, not a target. The suite sits at 100% across all 817 statements and
+# 132 branches, and the intent is to keep it there — 90 is the point at which
+# something has gone badly wrong, not the standard being aimed at.
+#
+# Set deliberately below where the suite actually is, so that a genuinely
+# hard-to-test branch can land without holding up a pull request. The cost is
+# that coverage could decay by roughly eighty statements before this fires, so
+# read the per-file table in CI rather than trusting a green gate to mean
+# nothing slipped.
+fail_under = 90
