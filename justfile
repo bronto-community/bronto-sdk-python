@@ -10,7 +10,7 @@ _default:
     just --list --unsorted
 
 # ⭐ run format, lint, typecheck, the spec and version gates, and tests
-prepare: format lint typecheck check-spec check-version test
+prepare: format lint lint-shell typecheck check-spec check-version test
 
 # ⭐ run all unit tests
 [positional-arguments]
@@ -38,6 +38,19 @@ format:
 # verify formatting, but don't modify files
 format-check:
     uv run ruff format . --check
+
+# ⭐ check the shell gates in scripts/ — they are release-critical and untyped
+lint-shell:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Preinstalled on GitHub's ubuntu runners; shellcheck-py ships the same
+    # binary for everyone else, so this needs no brew install to run locally.
+    if command -v shellcheck >/dev/null 2>&1; then
+      shellcheck scripts/*.sh
+    else
+      uvx --from shellcheck-py shellcheck scripts/*.sh
+    fi
+    echo "shellcheck: ok ($(ls scripts/*.sh | wc -l | tr -d ' ') scripts)"
 
 # verify the vendored OpenAPI spec matches its recorded digest
 check-spec:
