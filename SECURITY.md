@@ -60,3 +60,30 @@ Release artifacts are attached to each [GitHub
 Release](https://github.com/bronto-community/bronto-sdk-python/releases). The
 wheel and sdist are built by the `release.yml` workflow from the tagged commit;
 no artifact is uploaded by hand.
+
+From v0.1.1 onward each artifact is signed with [Sigstore](https://www.sigstore.dev/),
+keyless — there is no signing key, and this repository stores no secrets. The
+signature proves an artifact was produced by this repository's release workflow,
+running on the tag it claims. Every release carries a `.sigstore.json` bundle
+beside each artifact.
+
+The verifier is a Python package, so checking a download needs nothing but pip:
+
+```bash
+pip install sigstore
+
+# Download the artifact and its bundle from the release, side by side, then:
+python -m sigstore verify identity \
+  --cert-identity https://github.com/bronto-community/bronto-sdk-python/.github/workflows/release.yml@refs/tags/v0.1.1 \
+  --cert-oidc-issuer https://token.actions.githubusercontent.com \
+  bronto_sdk-0.1.1-py3-none-any.whl
+```
+
+Two things to watch. The `.sigstore.json` bundle must sit in the same directory
+as the artifact being verified — that is how the verifier finds it. And
+`--cert-identity` ends in the tag, so it changes with every release: verifying
+`v0.2.0` means putting `refs/tags/v0.2.0` in that URL, not the version above.
+
+A signature that does not verify means the file is not what this project
+published. Treat it as a security report and use the private reporting channel
+above rather than opening an issue.

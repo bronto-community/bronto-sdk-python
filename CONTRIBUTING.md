@@ -96,6 +96,11 @@ To cut a release:
    pushed the tag — the gate is there to make a release a deliberate, recorded
    act, not to force a second pair of hands.
 
+Signing is automatic and needs nothing from you: the workflow signs both
+artifacts with Sigstore using its own short-lived OIDC identity, verifies the
+signatures before publishing, and attaches a `.sigstore.json` bundle to each.
+[SECURITY.md](SECURITY.md) documents how a consumer checks them.
+
 The workflow gates the release on the tag matching the version files, then on
 the same lint/test/build checks a pull request runs — literally the same file,
 `.github/workflows/_checks.yml`, so a release cannot be verified on less than a
