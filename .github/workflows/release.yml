@@ -83,18 +83,24 @@ jobs:
       - name: Build sdist + wheel (twine check and the artifact gate included)
         run: just build
       - name: Sign the artifacts, then verify what was signed
-        uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9 # v3.5.0
-        with:
-          inputs: ./dist/*.whl ./dist/*.tar.gz
-          # Verify straight away, against the identity this run will have
-          # minted. A signature that does not verify fails the release here
-          # rather than being published and found by a consumer.
-          verify: true
-          verify-cert-identity: ${{ github.server_url }}/${{ github.repository }}/.github/workflows/release.yml@${{ github.ref }}
-          verify-oidc-issuer: https://token.actions.githubusercontent.com
-          # The .sigstore.json bundles are written beside each artifact and ride
-          # along with the existing `gh release create dist/*` upload below.
-          upload-signing-artifacts: false
+        env:
+          # Through env rather than inlined into the script below, which is what
+          # zizmor's template-injection audit asks for.
+          IDENTITY: ${{ github.server_url }}/${{ github.repository }}/.github/workflows/release.yml@${{ github.ref }}
+        # Calling sigstore directly rather than through its GitHub Action.
+        #
+        # Pinned like every other tool here: a signing tool that floats is an
+        # unreviewed input to the artifact people trust.
+        run: |
+          uv run --with 'sigstore==4.5.0' python -m sigstore sign \
+            dist/*.whl dist/*.tar.gz
+          # Verify straight away, against the identity this run just minted. A
+          # signature that does not verify fails the release here rather than
+          # being published and found by a consumer.
+          uv run --with 'sigstore==4.5.0' python -m sigstore verify identity \
+            --cert-identity "$IDENTITY" \
+            --cert-oidc-issuer https://token.actions.githubusercontent.com \
+            dist/*.whl dist/*.tar.gz
       - name: Extract this version's changelog section for the release body
         env:
           TAG: ${{ github.ref_name }}

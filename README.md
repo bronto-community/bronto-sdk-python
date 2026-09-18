@@ -15,14 +15,14 @@ The SDK is not on PyPI. Install the wheel attached to a
 pinned to a version:
 
 ```bash
-pip install https://github.com/bronto-community/bronto-sdk-python/releases/download/v0.1.1/bronto_sdk-0.1.1-py3-none-any.whl
+pip install https://github.com/bronto-community/bronto-sdk-python/releases/download/v0.1.2/bronto_sdk-0.1.2-py3-none-any.whl
 ```
 
 Or build from the tag, which works in a `requirements.txt` because the
 requirement is named:
 
 ```bash
-pip install "bronto-sdk @ git+https://github.com/bronto-community/bronto-sdk-python@v0.1.1"
+pip install "bronto-sdk @ git+https://github.com/bronto-community/bronto-sdk-python@v0.1.2"
 ```
 
 Requires Python 3.11 or newer. The only runtime dependencies are `httpx`,
@@ -33,7 +33,7 @@ reserved so adding it later is not a breaking rename. The `mcp` extra installs
 what `bronto_sdk.mcp` needs:
 
 ```bash
-pip install "bronto-sdk[mcp] @ git+https://github.com/bronto-community/bronto-sdk-python@v0.1.1"
+pip install "bronto-sdk[mcp] @ git+https://github.com/bronto-community/bronto-sdk-python@v0.1.2"
 ```
 
 ## Quickstart

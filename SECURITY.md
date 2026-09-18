@@ -61,7 +61,7 @@ Release](https://github.com/bronto-community/bronto-sdk-python/releases). The
 wheel and sdist are built by the `release.yml` workflow from the tagged commit;
 no artifact is uploaded by hand.
 
-From v0.1.1 onward each artifact is signed with [Sigstore](https://www.sigstore.dev/),
+From v0.1.2 onward each artifact is signed with [Sigstore](https://www.sigstore.dev/),
 keyless — there is no signing key, and this repository stores no secrets. The
 signature proves an artifact was produced by this repository's release workflow,
 running on the tag it claims. Every release carries a `.sigstore.json` bundle
@@ -74,9 +74,9 @@ pip install sigstore
 
 # Download the artifact and its bundle from the release, side by side, then:
 python -m sigstore verify identity \
-  --cert-identity https://github.com/bronto-community/bronto-sdk-python/.github/workflows/release.yml@refs/tags/v0.1.1 \
+  --cert-identity https://github.com/bronto-community/bronto-sdk-python/.github/workflows/release.yml@refs/tags/v0.1.2 \
   --cert-oidc-issuer https://token.actions.githubusercontent.com \
-  bronto_sdk-0.1.1-py3-none-any.whl
+  bronto_sdk-0.1.2-py3-none-any.whl
 ```
 
 Two things to watch. The `.sigstore.json` bundle must sit in the same directory

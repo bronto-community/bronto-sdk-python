@@ -8,7 +8,7 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
-## [0.1.1] - 2026-09-17
+## [0.1.2] - 2026-09-18
 
 ### Added
 
@@ -24,6 +24,13 @@ Breaking changes are listed first with a ⚠️ prefix.
   `python -m sigstore verify identity`. [SECURITY.md](SECURITY.md) has the full
   command. The release workflow verifies its own signatures before publishing,
   so an artifact whose signature does not check never reaches a release.
+
+### Note
+
+- `v0.1.1` was tagged but never released: its release workflow failed while
+  signing, before anything was published. The tag is left in place because
+  release tags are immutable here. There is no v0.1.1 release, and nothing was
+  ever published under it.
 
 ## [0.1.0] - 2026-09-17
 
@@ -87,6 +94,6 @@ Automatic retries and backoff, pagination iterators, an MCP session opener,
 LangChain tool decorators, OpenTelemetry hooks, an ingestion client (URL helper
 only), and REST coverage beyond the five operations above.
 
-[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/bronto-community/bronto-sdk-python/releases/tag/v0.1.0
