@@ -1,6 +1,6 @@
 [project]
 name = "bronto-sdk"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python SDK for the Bronto observability platform"
 readme = "README.md"
 authors = [{ name = "Bronto", email = "support@bronto.io" }]
