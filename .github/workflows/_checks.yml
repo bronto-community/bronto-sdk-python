@@ -52,10 +52,6 @@ jobs:
       - name: Typecheck
         run: just typecheck
       - name: Shell gates
-        # scripts/ holds the release gates — the version, artifact and ruleset
-        # checks. They are the least-covered code in the repository: no types,
-        # no tests, and they only ever run on the unhappy path. shellcheck is
-        # preinstalled on this runner, so this costs nothing.
         run: just lint-shell
       - name: Vendored spec digest gate
         run: just check-spec
