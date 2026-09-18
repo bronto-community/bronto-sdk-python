@@ -85,17 +85,6 @@ def quote_attribute(name: str) -> str:
 def wildcard_pattern(fragments: Iterable[str], *, escape: bool = False) -> str:
     """Join ``fragments`` with Bronto's ``%`` wildcard into a LIKE pattern.
 
-    Args:
-        fragments: The literal fragments to match between wildcards.
-        escape: When ``True``, double single quotes in each fragment first.
-
-    Returns:
-        A ``%``-delimited wildcard pattern.
-    """
-    parts = [escape_single_quotes(f) if escape else f for f in fragments]
-    return WILDCARD + WILDCARD.join([*parts, ""])
-    """Join ``fragments`` with Bronto's ``%`` wildcard into a LIKE pattern.
-
     The result has a leading and trailing wildcard and a wildcard between every
     fragment, so ``["foo", "bar"]`` becomes ``%foo%bar%``. The pattern is
     returned unquoted; wrap it with :func:`quote_value` (or escape each fragment

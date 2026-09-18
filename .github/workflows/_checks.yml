@@ -51,6 +51,8 @@ jobs:
         run: just format-check
       - name: Typecheck
         run: just typecheck
+      - name: Shell gates
+        run: just lint-shell
       - name: Vendored spec digest gate
         run: just check-spec
       - name: Version consistency gate

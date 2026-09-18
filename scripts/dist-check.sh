@@ -36,7 +36,7 @@ fi
 if [ "$(printf '%s\n' "$wheels" | grep -c .)" -ne 1 ] \
   || [ "$(printf '%s\n' "$sdists" | grep -c .)" -ne 1 ]; then
   echo "dist-check: expected exactly one wheel and one sdist in dist/, found:" >&2
-  printf '  %s\n' $wheels $sdists >&2
+  printf '%s\n' "$wheels" "$sdists" | sed 's/^/  /' >&2
   echo "'just build' removes dist/ first; a stale file here means it was added by hand." >&2
   exit 1
 fi
@@ -72,7 +72,7 @@ unexpected=$(printf '%s\n' "$wheel_names" | cut -d/ -f1 | sort -u \
   | grep -v '^bronto_sdk$' | grep -v '\.dist-info$' | grep -v '^$' || true)
 if [ -n "$unexpected" ]; then
   echo "dist-check: $wheels has unexpected top-level entries:" >&2
-  printf '  %s\n' $unexpected >&2
+  printf '%s\n' "$unexpected" | sed 's/^/  /' >&2
   exit 1
 fi
 
@@ -88,7 +88,7 @@ forbidden='(^|/)(\.github|\.vscode|\.venv|\.git|dist|htmlcov)(/|$)|plan\.md$|^CL
 leaked=$(printf '%s\n' "$sdist_names" | grep -E "$forbidden" || true)
 if [ -n "$leaked" ]; then
   echo "dist-check: the sdist contains files that must not be published:" >&2
-  printf '  %s\n' $leaked >&2
+  printf '%s\n' "$leaked" | sed 's/^/  /' >&2
   echo "Fix [tool.hatch.build.targets.sdist] in pyproject.toml." >&2
   exit 1
 fi

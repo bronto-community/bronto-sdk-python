@@ -33,6 +33,7 @@ mocked with `httpx.MockTransport`, so the fast suite never touches the network.
 | Everything CI runs | `just prepare` |
 | Format | `just format` / `just format-check` |
 | Lint | `just lint` |
+| Lint the shell gates in `scripts/` | `just lint-shell` |
 | Typecheck (pyright strict on `src/bronto_sdk`) | `just typecheck` |
 | Tests | `just test` / `just test-one <name>` |
 | Build sdist + wheel | `just build` |
