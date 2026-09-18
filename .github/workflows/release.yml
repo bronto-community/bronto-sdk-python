@@ -87,14 +87,7 @@ jobs:
           # Through env rather than inlined into the script below, which is what
           # zizmor's template-injection audit asks for.
           IDENTITY: ${{ github.server_url }}/${{ github.repository }}/.github/workflows/release.yml@${{ github.ref }}
-        # Calling sigstore directly rather than through its GitHub Action. The
-        # action builds its own virtualenv, and the UV_PYTHON and
-        # UV_PYTHON_INSTALL_DIR that setup-uv exports for the build above broke
-        # that bootstrap outright — v0.1.1 failed here with ModuleNotFoundError:
-        # No module named 'requests'. uv is already on the runner, so invoking
-        # the tool ourselves removes the interaction, drops a third-party action
-        # along with the nested action-gh-release it pulls in, and runs the exact
-        # command SECURITY.md tells consumers to run.
+        # Calling sigstore directly rather than through its GitHub Action.
         #
         # Pinned like every other tool here: a signing tool that floats is an
         # unreviewed input to the artifact people trust.
