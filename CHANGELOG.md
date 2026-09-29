@@ -8,6 +8,8 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
 ### Added
 
 - **`client.metrics.retrieve_definition(metric_id)`** — `GET
@@ -99,6 +101,7 @@ Automatic retries and backoff, pagination iterators, an MCP session opener,
 LangChain tool decorators, OpenTelemetry hooks, an ingestion client (URL helper
 only), and REST coverage beyond the five operations above.
 
-[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/bronto-community/bronto-sdk-python/releases/tag/v0.1.0
