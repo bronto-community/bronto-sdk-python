@@ -5,6 +5,7 @@ from __future__ import annotations
 from ._common import Identity, ResourceMetadata
 from ._dataset import Dataset, DatasetsResponse
 from ._error import ErrorResponse
+from ._metric import MetricDefinition
 from ._monitor import (
     Monitor,
     MonitorAction,
@@ -45,6 +46,7 @@ __all__ = [
     "Histogram",
     "HistogramBucket",
     "Identity",
+    "MetricDefinition",
     "Monitor",
     "MonitorAction",
     "MonitorAggregation",

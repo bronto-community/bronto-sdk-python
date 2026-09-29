@@ -96,6 +96,9 @@ the API gateway.
 | `client.monitors.retrieve(monitor_id)` | `GET /monitors/{id}` | `Monitor` |
 | `client.monitors.events(monitor_id, from_ts=…, to_ts=…)` | `GET /monitors/{id}/events` | `MonitorEventsResponse` |
 | `client.datasets.list(from_=…, from_expr=…)` | `GET /datasets` | `DatasetsResponse` |
+| `client.metrics.retrieve_definition(metric_id)` | `GET /metrics/definitions/{id}` ¹ | `MetricDefinition` |
+
+¹ Served by the API but not declared in the vendored `api/openapi.yaml`.
 
 `search.run()` accepts a `SearchRequest` **or** a plain `dict`, validated on the
 way in. Path parameters are URL-quoted.

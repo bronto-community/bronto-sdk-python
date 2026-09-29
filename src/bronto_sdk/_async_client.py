@@ -25,6 +25,7 @@ from ._client_config import (
 from ._request_options import RequestOptions, client_credential
 from ._transport import parse_response
 from .resources._datasets import AsyncDatasetsResource
+from .resources._metrics import AsyncMetricsResource
 from .resources._monitors import AsyncMonitorsResource
 from .resources._search import AsyncSearchResource
 
@@ -109,6 +110,11 @@ class AsyncBrontoClient:
     def datasets(self) -> AsyncDatasetsResource:
         """The typed dataset surface."""
         return AsyncDatasetsResource(self)
+
+    @cached_property
+    def metrics(self) -> AsyncMetricsResource:
+        """The typed metric-definition surface."""
+        return AsyncMetricsResource(self)
 
     async def get(
         self,

@@ -8,6 +8,12 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
+### Added
+
+- **`client.metrics.retrieve_definition(metric_id)`** — `GET
+  /metrics/definitions/{id}`, returning a `MetricDefinition`. The endpoint is
+  served but not declared in the vendored spec.
+
 ## [0.1.2] - 2026-09-18
 
 ### Added
