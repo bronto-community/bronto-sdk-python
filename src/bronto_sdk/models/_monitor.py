@@ -68,7 +68,7 @@ class MonitorAggregation(ReadModel):
 
 
 class MonitorFormula(ReadModel):
-    """A named expression combining a monitor's queries.
+    """A named expression combining queries.
 
     Attributes:
         name: The formula's name, referenced by the monitor's threshold.
@@ -146,7 +146,8 @@ class Monitor(ReadModel):
         queries: The queries backing the monitor. Declared on the spec's
             create-request schema but not on its ``Monitor`` read schema; on
             some deployments they live on the backing metric definition
-            instead, which v0.1 does not cover — hence optional.
+            instead (see ``client.metrics.retrieve_definition``), hence
+            optional.
         formulas: Expressions combining ``queries``. Same provenance.
         tags: Free-form key/value labels. Same provenance.
     """

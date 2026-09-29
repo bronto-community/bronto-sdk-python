@@ -24,6 +24,7 @@ from ._client_config import (
 from ._request_options import RequestOptions, client_credential
 from ._transport import parse_response
 from .resources._datasets import DatasetsResource
+from .resources._metrics import MetricsResource
 from .resources._monitors import MonitorsResource
 from .resources._search import SearchResource
 
@@ -102,6 +103,11 @@ class BrontoClient:
     def datasets(self) -> DatasetsResource:
         """The typed dataset surface."""
         return DatasetsResource(self)
+
+    @cached_property
+    def metrics(self) -> MetricsResource:
+        """The typed metric-definition surface."""
+        return MetricsResource(self)
 
     def get(
         self,
