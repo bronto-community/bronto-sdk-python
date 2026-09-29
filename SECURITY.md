@@ -74,9 +74,9 @@ pip install sigstore
 
 # Download the artifact and its bundle from the release, side by side, then:
 python -m sigstore verify identity \
-  --cert-identity https://github.com/bronto-community/bronto-sdk-python/.github/workflows/release.yml@refs/tags/v0.1.2 \
+  --cert-identity https://github.com/bronto-community/bronto-sdk-python/.github/workflows/release.yml@refs/tags/v0.2.0 \
   --cert-oidc-issuer https://token.actions.githubusercontent.com \
-  bronto_sdk-0.1.2-py3-none-any.whl
+  bronto_sdk-0.2.0-py3-none-any.whl
 ```
 
 Two things to watch. The `.sigstore.json` bundle must sit in the same directory
