@@ -8,6 +8,13 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
+### Security
+
+- Refreshed `uv.lock` to PyJWT 2.15.1 and urllib3 2.8.0. Both reach the lock
+  only through the `mcp`/`langchain` extras and dev tooling; the SDK never
+  imports them and its published dependency ranges are unchanged, so installed
+  users resolve their own versions and are not affected.
+
 ## [0.2.0] - 2026-09-29
 
 ### Added
