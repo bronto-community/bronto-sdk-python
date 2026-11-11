@@ -8,12 +8,37 @@ Breaking changes are listed first with a ⚠️ prefix.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-11
+
+### Added
+
+- **Published on [PyPI](https://pypi.org/project/bronto-sdk/)** — install with
+  `pip install bronto-sdk` (or `bronto-sdk[mcp]`) instead of a GitHub Release
+  URL or a `git+https` requirement. Uploads use Trusted Publishing from the
+  release workflow (no API token exists) and carry PEP 740 provenance
+  attestations; PyPI receives exactly the files that are Sigstore-signed and
+  attached to the GitHub Release, which continues as before.
+  [SECURITY.md](https://github.com/bronto-community/bronto-sdk-python/blob/main/SECURITY.md#verifying-a-release)
+  covers verifying both.
+
 ### Security
 
 - Refreshed `uv.lock` to PyJWT 2.15.1 and urllib3 2.8.0. Both reach the lock
   only through the `mcp`/`langchain` extras and dev tooling; the SDK never
   imports them and its published dependency ranges are unchanged, so installed
   users resolve their own versions and are not affected.
+- Refreshed `uv.lock` to certifi 2026.10.23, which drops the emSign root CAs
+  whose intermediate keys were compromised (GHSA-6q48-6c7w-9gw2). certifi
+  reaches the lock only transitively through `httpx`; the SDK's published
+  dependency ranges are unchanged, so installed users resolve their own
+  certifi and should upgrade it in their own environments.
+
+### Changed
+
+- Refreshed `uv.lock` to pydantic 2.14.1, langchain-core 1.7.3, and newer dev
+  tooling (ruff 0.17.3, pytest 9.2.0, pytest-mock 3.17.0, pytest-asyncio
+  1.4.1.post1), and bumped the pinned CI actions. Published dependency ranges
+  are unchanged.
 
 ## [0.2.0] - 2026-09-29
 
@@ -108,7 +133,8 @@ Automatic retries and backoff, pagination iterators, an MCP session opener,
 LangChain tool decorators, OpenTelemetry hooks, an ingestion client (URL helper
 only), and REST coverage beyond the five operations above.
 
-[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/bronto-community/bronto-sdk-python/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/bronto-community/bronto-sdk-python/releases/tag/v0.1.0

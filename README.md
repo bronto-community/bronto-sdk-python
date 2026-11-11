@@ -1,28 +1,19 @@
 # bronto-sdk
 
 [![CI](https://github.com/bronto-community/bronto-sdk-python/actions/workflows/ci.yml/badge.svg)](https://github.com/bronto-community/bronto-sdk-python/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/bronto-community/bronto-sdk-python)](https://github.com/bronto-community/bronto-sdk-python/releases)
+[![PyPI](https://img.shields.io/pypi/v/bronto-sdk)](https://pypi.org/project/bronto-sdk/)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/bronto-community/bronto-sdk-python/badge)](https://scorecard.dev/viewer/?uri=github.com/bronto-community/bronto-sdk-python)
-[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://github.com/bronto-community/bronto-sdk-python)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/bronto-sdk)](https://pypi.org/project/bronto-sdk/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bronto-community/bronto-sdk-python/blob/main/LICENSE)
 
 Python SDK for the [Bronto](https://bronto.io) observability platform.
 
 ## Installation
 
-The SDK is not on PyPI. Install the wheel attached to a
-[GitHub Release](https://github.com/bronto-community/bronto-sdk-python/releases),
-pinned to a version:
-
 ```bash
-pip install https://github.com/bronto-community/bronto-sdk-python/releases/download/v0.2.0/bronto_sdk-0.2.0-py3-none-any.whl
-```
-
-Or build from the tag, which works in a `requirements.txt` because the
-requirement is named:
-
-```bash
-pip install "bronto-sdk @ git+https://github.com/bronto-community/bronto-sdk-python@v0.2.0"
+pip install bronto-sdk
+# or
+uv add bronto-sdk
 ```
 
 Requires Python 3.11 or newer. The only runtime dependencies are `httpx`,
@@ -33,8 +24,14 @@ reserved so adding it later is not a breaking rename. The `mcp` extra installs
 what `bronto_sdk.mcp` needs:
 
 ```bash
-pip install "bronto-sdk[mcp] @ git+https://github.com/bronto-community/bronto-sdk-python@v0.2.0"
+pip install "bronto-sdk[mcp]"
 ```
+
+PyPI uploads carry provenance attestations, and every release is also
+attached, with Sigstore signatures, to a
+[GitHub Release](https://github.com/bronto-community/bronto-sdk-python/releases).
+[SECURITY.md](https://github.com/bronto-community/bronto-sdk-python/blob/main/SECURITY.md#verifying-a-release)
+covers verifying either.
 
 ## Quickstart
 
@@ -337,10 +334,10 @@ just prepare     # format, lint, typecheck, spec digest gate, tests
 ```
 
 `just prepare` must be green before every commit. Run `just --list` to see
-every recipe, and see [CONTRIBUTING.md](CONTRIBUTING.md) for the full setup.
+every recipe, and see [CONTRIBUTING.md](https://github.com/bronto-community/bronto-sdk-python/blob/main/CONTRIBUTING.md) for the full setup.
 
-Runnable versions of everything above live in [`examples/`](examples/).
+Runnable versions of everything above live in [`examples/`](https://github.com/bronto-community/bronto-sdk-python/tree/main/examples).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/bronto-community/bronto-sdk-python/blob/main/LICENSE).

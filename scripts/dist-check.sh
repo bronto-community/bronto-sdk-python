@@ -14,7 +14,8 @@
 #    0.1.0 sdist shipped an internal planning document, .vscode/ and .github/,
 #    because hatchling's default is "everything git does not ignore". The
 #    explicit manifest in pyproject.toml fixes it; this gate is what stops it
-#    coming back, since the sdist is attached to every GitHub Release.
+#    coming back, since the sdist is published to PyPI and attached to every
+#    GitHub Release — and a PyPI upload can never be replaced.
 #
 # Usage:
 #   dist-check.sh          check the artifacts in dist/
