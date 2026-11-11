@@ -76,10 +76,16 @@ and `pyproject.toml` in one step.
 
 ## Releasing (maintainers)
 
-Releases are **GitHub Releases**, not PyPI. A `vX.Y.Z` tag push runs
-`release.yml`, which builds the sdist and wheel and attaches both to a release
-consumers install from. Publishing to PyPI is deliberately off; the note at the
-foot of `.github/workflows/release.yml` records how to turn it on.
+A `vX.Y.Z` tag push runs `release.yml`, which builds the sdist and wheel,
+attaches both to a **GitHub Release**, then publishes the very same files to
+**[PyPI](https://pypi.org/project/bronto-sdk/)**. PyPI is what consumers
+install from (`pip install bronto-sdk`).
+
+PyPI uploads use [Trusted Publishing](https://docs.pypi.org/trusted-publishers/):
+the `publish` job exchanges a short-lived GitHub OIDC token for an upload
+credential, so there is no PyPI API token to store, rotate or leak. Do not add
+one, and do not upload by hand with `twine` — a hand upload has no attestation
+and is indistinguishable from a compromised one.
 
 To cut a release:
 
@@ -95,7 +101,20 @@ To cut a release:
    `release` environment; approve it from the run's page in the Actions tab.
    Either maintainer on the reviewer list can approve, including the person who
    pushed the tag — the gate is there to make a release a deliberate, recorded
-   act, not to force a second pair of hands.
+   act, not to force a second pair of hands. The `publish` job runs on its own
+   once the GitHub Release exists; it needs no second approval.
+6. Check [pypi.org/project/bronto-sdk](https://pypi.org/project/bronto-sdk/)
+   shows the version, with "Provenance" on each file.
+
+If `publish` fails after the GitHub Release succeeded (PyPI outage,
+misconfigured publisher), fix the cause and use **Re-run failed jobs** on the
+same run. It re-uploads the artifacts the release job already signed; nothing
+is rebuilt and no version is spent.
+
+**A PyPI version is as permanent as its tag.** PyPI never accepts the same file
+name twice, even after the release is deleted. A bad release is yanked on PyPI
+(which hides it from new resolutions without breaking existing pins) and
+superseded by the next patch version — never deleted and re-uploaded.
 
 Signing is automatic and needs nothing from you: the workflow signs both
 artifacts with Sigstore using its own short-lived OIDC identity, verifies the
@@ -109,7 +128,25 @@ pull request is.
 
 **Rehearse with `workflow_dispatch`, not with a tag.** Running `release.yml`
 from `main` exercises the version gate, the full test matrix and the build; the
-release job is skipped because there is no tag.
+release and publish jobs are skipped because there is no tag.
+
+### One-time PyPI setup
+
+Already done for this repository; recorded so it can be checked or rebuilt.
+Trusted Publishing only works when both sides name each other exactly:
+
+- **PyPI**: the `bronto-sdk` project (owned by the Bronto PyPI organization) has
+  a GitHub trusted publisher with owner `bronto-community`, repository
+  `bronto-sdk-python`, workflow `release.yml`, environment `pypi`. Before the
+  first upload this is a *pending* publisher, added from the organization's
+  Publishing page so the project is created under the organization.
+- **GitHub**: a `pypi` environment (Settings → Environments) whose deployment
+  policy allows `v*` tags only, and no reviewers — approving `release` is the
+  gate. Restricting it to tags means a workflow run from a branch cannot obtain
+  a token PyPI will accept, even if the workflow file is edited on that branch.
+
+Renaming the workflow file or the environment breaks publishing until the PyPI
+publisher is updated to match.
 
 Do not push a throwaway `vX.Y.Zrc1` tag to rehearse. A repository ruleset makes
 every `v*` tag immutable — it cannot be moved or deleted once pushed, by anyone,

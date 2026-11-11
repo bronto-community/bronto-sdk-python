@@ -1,6 +1,6 @@
 [project]
 name = "bronto-sdk"
-version = "0.2.0"
+version = "0.2.1"
 description = "Python SDK for the Bronto observability platform"
 readme = "README.md"
 authors = [{ name = "Bronto", email = "support@bronto.io" }]
@@ -36,10 +36,12 @@ mcp = ["mcp>=1.24,<2", "langchain-mcp-adapters>=0.3.1"]
 langchain = ["langchain-core>=0.3"]
 
 [project.urls]
-homepage = "https://github.com/bronto-community/bronto-sdk-python"
-source = "https://github.com/bronto-community/bronto-sdk-python"
-issues = "https://github.com/bronto-community/bronto-sdk-python/issues"
-changelog = "https://github.com/bronto-community/bronto-sdk-python/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/bronto-community/bronto-sdk-python"
+Documentation = "https://github.com/bronto-community/bronto-sdk-python#readme"
+Source = "https://github.com/bronto-community/bronto-sdk-python"
+Issues = "https://github.com/bronto-community/bronto-sdk-python/issues"
+Changelog = "https://github.com/bronto-community/bronto-sdk-python/blob/main/CHANGELOG.md"
+Releases = "https://github.com/bronto-community/bronto-sdk-python/releases"
 
 [dependency-groups]
 dev = [
@@ -68,8 +70,9 @@ packages = ["src/bronto_sdk"]
 # Hatchling's default sdist is "every file git does not ignore", which makes the
 # contents a byproduct rather than a decision — under it the 0.1.0 sdist shipped
 # an internal planning document, .vscode/ and the whole .github/ tree. Since the
-# sdist is attached to every GitHub Release, that default publishes whatever
-# happens to be lying in the working tree. This list is the decision.
+# sdist is published to PyPI and attached to every GitHub Release, that default
+# publishes whatever happens to be lying in the working tree. This list is the
+# decision.
 #
 # api/ is deliberately included even though openapi.yaml is most of the archive:
 # `just check-spec` is part of the contract, and it has nothing to verify
